@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HiringLens — Stand Out in Any Hiring Process</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background-color: #0A0F1E;
+    color: #F1F5F9;
+    font-family: 'Inter', sans-serif, Arial, sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    background-color: #0A0F1E;
+  }
+
+  header {
+    padding: 48px 0 40px;
+    border-bottom: 1px solid #1E2D45;
+    margin-bottom: 40px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: #2563EB;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: #FFFFFF; letter-spacing: -0.5px;
+  }
+
+  .logo-name span { color: #3B82F6; }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -1px; color: #FFFFFF;
+    margin-bottom: 12px;
+  }
+
+  h1 span { color: #60A5FA; }
+
+  .subtitle {
+    font-size: 15px; color: #94A3B8;
+    font-weight: 300; max-width: 520px; line-height: 1.7;
+  }
+
+  .form-card {
+    background-color: #111827;
+    border: 1px solid #1E2D45;
+    border-radius: 12px;
+    padding: 28px; margin-bottom: 20px;
+  }
+
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #94A3B8; margin-bottom: 8px;
+  }
+
+  label .req { color: #3B82F6; margin-left: 2px; }
+
+  textarea {
+    width: 100%;
+    background-color: #1A2235;
+    border: 1px solid #1E2D45;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Inter', sans-serif, Arial;
+    font-size: 14px;
+    color: #F1F5F9;
+    outline: none; resize: vertical; line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: #2563EB; }
+
+  textarea::placeholder { color: #64748B; }
+
+  .btn-analyze {
+    width: 100%; padding: 16px;
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border: none; border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: flex; align-items: center;
+    justify-content: center; gap: 8px;
+  }
+
+  .btn-analyze:hover { background-color: #1D4ED8; }
+  .btn-analyze:active { transform: scale(0.99); }
+  .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .loading-wrap {
+    display: none;
+    background-color: #111827;
+    border: 1px solid #1E2D45;
+    border-radius: 12px;
+    padding: 40px 28px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .loading-wrap.visible { display: block; }
+
+  .loading-spinner {
+    width: 40px; height: 40px;
+    border: 3px solid #1E2D45;
+    border-top-color: #3B82F6;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-title {
+    font-size: 15px; font-weight: 600;
+    color: #F1F5F9; margin-bottom: 8px;
+  }
+
+  .loading-sub {
+    font-size: 13px; color: #64748B; margin-bottom: 20px;
+  }
+
+  .loading-steps {
+    list-style: none;
+    display: inline-flex; flex-direction: column;
+    gap: 8px; text-align: left; margin-top: 16px;
+  }
+
+  .loading-steps li {
+    font-size: 13px; color: #64748B;
+    display: flex; align-items: center; gap: 8px;
+    transition: color 0.3s;
+  }
+
+  .loading-steps li.active { color: #60A5FA; }
+  .loading-steps li.done  { color: #10B981; }
+
+  .step-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+
+  .error-box {
+    display: none;
+    background-color: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px; color: #FCA5A5;
+    margin-bottom: 20px;
+  }
+
+  .error-box.visible { display: block; }
+
+  #results { display: none; }
+  #results.visible { display: block; }
+
+  .company-header {
+    background: linear-gradient(135deg, #111827 0%, #1A2235 100%);
+    border: 1px solid #1E2D45;
+    border-radius: 12px; padding: 28px;
+    margin-bottom: 20px;
+    display: flex; align-items: flex-start;
+    gap: 20px; flex-wrap: wrap;
+  }
+
+  .company-avatar {
+    width: 52px; height: 52px;
+    background-color: #2563EB;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 800;
+    color: #FFFFFF; flex-shrink: 0;
+  }
+
+  .company-info { flex: 1; }
+
+  .company-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: #FFFFFF; margin-bottom: 4px;
+  }
+
+  .company-role { font-size: 14px; color: #94A3B8; margin-bottom: 12px; }
+
+  .company-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .tag {
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(37,99,235,0.3);
+    color: #60A5FA;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .intel-card {
+    background-color: #1A2235;
+    border: 1px solid #1E2D45;
+    border-left: 3px solid #F59E0B;
+    border-radius: 8px; padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .intel-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: #F59E0B; margin-bottom: 10px;
+  }
+
+  .intel-text { font-size: 14px; color: #94A3B8; line-height: 1.7; }
+
+  .section {
+    background-color: #111827;
+    border: 1px solid #1E2D45;
+    border-radius: 12px; padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .section-header {
+    display: flex; align-items: center;
+    gap: 12px; margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #1E2D45;
+  }
+
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center;
+    justify-content: center; font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section-icon.blue   { background: rgba(37,99,235,0.2); }
+  .section-icon.green  { background: rgba(16,185,129,0.2); }
+  .section-icon.amber  { background: rgba(245,158,11,0.2); }
+  .section-icon.purple { background: rgba(139,92,246,0.2); }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px; font-weight: 700; color: #FFFFFF;
+  }
+
+  .section-subtitle { font-size: 12px; color: #64748B; margin-top: 2px; }
+
+  .steps-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .step-item { display: flex; gap: 14px; align-items: flex-start; }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%; background-color: #2563EB;
+    color: #FFFFFF; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .step-content { flex: 1; }
+
+  .step-title {
+    font-size: 14px; font-weight: 600;
+    color: #F1F5F9; margin-bottom: 4px;
+  }
+
+  .step-desc { font-size: 13px; color: #94A3B8; line-height: 1.6; }
+
+  .insights-grid { display: flex; flex-direction: column; gap: 10px; }
+
+  .insight-item {
+    background-color: #1A2235;
+    border: 1px solid #1E2D45;
+    border-radius: 8px; padding: 14px 16px;
+    padding-left: 40px;
+    font-size: 13.5px; color: #94A3B8;
+    line-height: 1.6; position: relative;
+  }
+
+  .insight-item::before {
+    content: attr(data-icon);
+    position: absolute; left: 12px; top: 14px;
+    font-size: 14px;
+  }
+
+  .angle-card {
+    background: rgba(37,99,235,0.1);
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 10px; padding: 20px;
+    margin-bottom: 12px;
+  }
+
+  .angle-title {
+    font-size: 11px; font-weight: 700;
+    color: #60A5FA; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .angle-headline {
+    font-size: 16px; font-weight: 600;
+    color: #F1F5F9; margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  .angle-rationale { font-size: 14px; color: #94A3B8; line-height: 1.7; }
+
+  .key-message-box {
+    background-color: #1A2235;
+    border: 1px solid #2A3F5F;
+    border-radius: 8px; padding: 16px;
+  }
+
+  .key-message-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #64748B; margin-bottom: 6px;
+  }
+
+  .key-message-text { font-size: 14px; color: #94A3B8; line-height: 1.6; }
+
+  .score-row {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px; background-color: #1A2235;
+    border-radius: 8px;
+  }
+
+  .score-badge {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px; font-weight: 800;
+    color: #10B981; flex-shrink: 0;
+  }
+
+  .score-badge .denom { font-size: 18px; color: #64748B; }
+  .score-badge.mid { color: #F59E0B; }
+  .score-badge.low { color: #EF4444; }
+
+  .score-info { flex: 1; }
+
+  .score-label-txt {
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #64748B;
+  }
+
+  .score-summary { font-size: 13px; color: #94A3B8; margin-top: 4px; line-height: 1.6; }
+
+  .btn-copy {
+    width: 100%; padding: 13px;
+    background: transparent;
+    border: 1px solid #2A3F5F;
+    border-radius: 8px; color: #94A3B8;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-copy:hover { border-color: #3B82F6; color: #60A5FA; }
+
+  .btn-reset {
+    display: block; margin: 20px auto 0;
+    background: none; border: none;
+    color: #64748B; font-size: 13px;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    text-decoration: underline;
+  }
+
+  .btn-reset:hover { color: #94A3B8; }
+
+  footer {
+    border-top: 1px solid #1E2D45;
+    padding: 24px 0 0; margin-top: 40px;
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+
+  footer span { font-size: 12px; color: #64748B; }
+  footer a { color: #60A5FA; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🔍</div>
+      <div class="logo-name">Hiring<span>Lens</span></div>
+    </div>
+    <h1>Stand out in<br><span>any hiring process.</span></h1>
+    <p class="subtitle">Paste the hiring email and job description. HiringLens researches the company, decodes the process, and builds your personalized action plan.</p>
+  </header>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="form-card" id="formCard">
+    <div class="field">
+      <label>Hiring Process / Email Received <span class="req">*</span></label>
+      <textarea id="processText" rows="7"
+        placeholder="Paste the email or message you received describing the hiring process..."></textarea>
+    </div>
+    <div class="field">
+      <label>Job Description <span class="req">*</span></label>
+      <textarea id="jobDesc" rows="7"
+        placeholder="Paste the full job description here..."></textarea>
+    </div>
+    <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
+      <span>🔍</span>
+      <span id="btnText">Build My Action Plan</span>
+    </button>
+  </div>
+
+  <div class="loading-wrap" id="loadingWrap">
+    <div class="loading-spinner"></div>
+    <p class="loading-title">Analyzing your opportunity...</p>
+    <p class="loading-sub">This takes about 20 seconds</p>
+    <ul class="loading-steps" id="loadingSteps">
+      <li id="step1"><span class="step-dot"></span> Extracting company and role information</li>
+      <li id="step2"><span class="step-dot"></span> Researching company culture and signals</li>
+      <li id="step3"><span class="step-dot"></span> Decoding what the process really wants</li>
+      <li id="step4"><span class="step-dot"></span> Building your personalized action plan</li>
+    </ul>
+  </div>
+
+  <div id="results">
+    <div class="company-header">
+      <div class="company-avatar" id="companyAvatar">?</div>
+      <div class="company-info">
+        <div class="company-name" id="companyName">—</div>
+        <div class="company-role" id="companyRole">—</div>
+        <div class="company-tags" id="companyTags"></div>
+      </div>
+    </div>
+
+    <div class="intel-card">
+      <div class="intel-label">⚡ Company Intel</div>
+      <div class="intel-text" id="companyIntel">—</div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon blue">🧩</div>
+        <div>
+          <div class="section-title">What This Process Really Wants</div>
+          <div class="section-subtitle">Reading between the lines</div>
+        </div>
+      </div>
+      <div class="insights-grid" id="processInsights"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon purple">🎯</div>
+        <div>
+          <div class="section-title">Your Winning Angle</div>
+          <div class="section-subtitle">How to position yourself to stand out</div>
+        </div>
+      </div>
+      <div id="winningAngle"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon green">✅</div>
+        <div>
+          <div class="section-title">Your Step-by-Step Action Plan</div>
+          <div class="section-subtitle">Execute this before the deadline</div>
+        </div>
+      </div>
+      <div class="steps-list" id="actionSteps"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon amber">⚠️</div>
+        <div>
+          <div class="section-title">What Most Candidates Get Wrong</div>
+          <div class="section-subtitle">Avoid these mistakes</div>
+        </div>
+      </div>
+      <div class="insights-grid" id="mistakesContent"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon blue">📊</div>
+        <div>
+          <div class="section-title">Opportunity Assessment</div>
+          <div class="section-subtitle">How good is this opportunity for you?</div>
+        </div>
+      </div>
+      <div id="opportunityScore"></div>
+    </div>
+
+    <button class="btn-copy" onclick="copyReport()">📋 Copy Full Action Plan</button>
+    <button class="btn-reset" onclick="resetForm()">← Analyze another opportunity</button>
+  </div>
+
+  <footer>
+    <span>HiringLens — powered by Claude AI</span>
+    <span>by <a href="https://github.com/banesjunior3-afk" target="_blank">@banesjunior3-afk</a></span>
+  </footer>
+
+</div>
+
+<script>
+const API_KEY = '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';
+
+function setStep(id, state) {
+  const el = document.getElementById(id);
+  if (el) el.className = state;
+}
+
+function animateSteps() {
+  [['step1',0],['step2',2000],['step3',5000],['step4',9000]].forEach(([s,d]) => {
+    setTimeout(() => setStep(s,'active'), d);
+  });
+}
+
+async function analyze() {
+  const processText = document.getElementById('processText').value.trim();
+  const jobDesc     = document.getElementById('jobDesc').value.trim();
+  if (!processText || !jobDesc) { showError('Please fill in both fields.'); return; }
+  hideError();
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('loadingWrap').classList.add('visible');
+  animateSteps();
+
+  const prompt = `You are an elite career strategist and talent intelligence expert. Help a candidate stand out in a specific hiring process.
+
+HIRING PROCESS / EMAIL:
+${processText}
+
+JOB DESCRIPTION:
+${jobDesc}
+
+Analyze these materials and return ONLY a valid JSON object:
+
+{
+  "company": "<company name>",
+  "role": "<role title>",
+  "tags": ["<3-5 short tags like 'AI-first', 'Startup', 'Remote'>"],
+  "companyIntel": "<3-4 sentences of specific intelligence about this company: culture, hiring patterns, what they value, what kind of people thrive there>",
+  "processInsights": [
+    {"icon": "🔍", "text": "<what this process is really testing — specific and non-obvious>"},
+    {"icon": "🧠", "text": "<the cognitive or behavioral profile they're selecting for>"},
+    {"icon": "⚡", "text": "<the hidden filter or real bar being set>"},
+    {"icon": "🎯", "text": "<what will make someone immediately stand out vs blend in>"}
+  ],
+  "winningAngle": {
+    "headline": "<sharp 1-sentence positioning statement>",
+    "rationale": "<2-3 sentences explaining why this angle works>",
+    "keyMessage": "<single most important message to communicate throughout>"
+  },
+  "actionSteps": [
+    {"title": "<step>", "description": "<specific actionable description — no vague advice>"},
+    {"title": "<step>", "description": "<specific>"},
+    {"title": "<step>", "description": "<specific>"},
+    {"title": "<step>", "description": "<specific>"},
+    {"title": "<step>", "description": "<specific>"}
+  ],
+  "mistakes": [
+    {"icon": "❌", "text": "<common mistake for this specific type of process>"},
+    {"icon": "❌", "text": "<another specific mistake>"},
+    {"icon": "❌", "text": "<another specific mistake>"}
+  ],
+  "opportunityScore": {
+    "score": <1-10>,
+    "label": "<Excellent/Strong/Good/Fair/Weak>",
+    "summary": "<2-3 honest sentences about this opportunity>"
+  }
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `Error ${res.status}`); }
+    const data = await res.json();
+    const raw  = data.content[0].text;
+    const m    = raw.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('Could not parse response. Try again.');
+    const d = JSON.parse(m[0]);
+    ['step1','step2','step3','step4'].forEach(s => setStep(s,'done'));
+    setTimeout(() => {
+      document.getElementById('loadingWrap').classList.remove('visible');
+      renderResults(d);
+    }, 500);
+  } catch(err) {
+    document.getElementById('loadingWrap').classList.remove('visible');
+    document.getElementById('formCard').style.display = 'block';
+    showError('Error: ' + err.message);
+  }
+}
+
+function renderResults(d) {
+  const name = d.company || 'Company';
+  document.getElementById('companyAvatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('companyName').textContent   = name;
+  document.getElementById('companyRole').textContent   = d.role || '—';
+
+  const tagsEl = document.getElementById('companyTags');
+  tagsEl.innerHTML = '';
+  (d.tags||[]).forEach(t => {
+    const s = document.createElement('span');
+    s.className = 'tag'; s.textContent = t;
+    tagsEl.appendChild(s);
+  });
+
+  document.getElementById('companyIntel').textContent = d.companyIntel || '—';
+
+  const ins = document.getElementById('processInsights');
+  ins.innerHTML = '';
+  (d.processInsights||[]).forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'insight-item';
+    div.setAttribute('data-icon', item.icon||'•');
+    div.textContent = item.text;
+    ins.appendChild(div);
+  });
+
+  const wa = d.winningAngle || {};
+  document.getElementById('winningAngle').innerHTML = `
+    <div class="angle-card">
+      <div class="angle-title">Your Positioning</div>
+      <div class="angle-headline">"${wa.headline||''}"</div>
+      <div class="angle-rationale">${wa.rationale||''}</div>
+    </div>
+    <div class="key-message-box">
+      <div class="key-message-label">Key Message to Communicate</div>
+      <div class="key-message-text">${wa.keyMessage||''}</div>
+    </div>`;
+
+  const stEl = document.getElementById('actionSteps');
+  stEl.innerHTML = '';
+  (d.actionSteps||[]).forEach((s,i) => {
+    const div = document.createElement('div');
+    div.className = 'step-item';
+    div.innerHTML = `<div class="step-num">${i+1}</div>
+      <div class="step-content">
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.description}</div>
+      </div>`;
+    stEl.appendChild(div);
+  });
+
+  const mEl = document.getElementById('mistakesContent');
+  mEl.innerHTML = '';
+  (d.mistakes||[]).forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'insight-item';
+    div.setAttribute('data-icon', item.icon||'❌');
+    div.textContent = item.text;
+    mEl.appendChild(div);
+  });
+
+  const os = d.opportunityScore || {};
+  const sc = os.score || 0;
+  const cls = sc >= 7 ? '' : sc >= 5 ? 'mid' : 'low';
+  document.getElementById('opportunityScore').innerHTML = `
+    <div class="score-row">
+      <div class="score-badge ${cls}">${sc}<span class="denom">/10</span></div>
+      <div class="score-info">
+        <div class="score-label-txt">${os.label||'—'} Opportunity</div>
+        <div class="score-summary">${os.summary||'—'}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+function copyReport() {
+  const t = [
+    'HIRINGLENS ACTION PLAN',
+    '='.repeat(50),
+    'Company: ' + document.getElementById('companyName').textContent,
+    'Role: '    + document.getElementById('companyRole').textContent,
+    '',
+    'COMPANY INTEL',
+    document.getElementById('companyIntel').textContent,
+    '',
+    'WHAT THIS PROCESS REALLY WANTS',
+    ...Array.from(document.querySelectorAll('#processInsights .insight-item')).map(e=>'  • '+e.textContent),
+    '',
+    'YOUR WINNING ANGLE',
+    document.querySelector('.angle-headline')?.textContent||'',
+    document.querySelector('.angle-rationale')?.textContent||'',
+    '',
+    'ACTION PLAN',
+    ...Array.from(document.querySelectorAll('#actionSteps .step-item')).map((e,i)=>`  ${i+1}. ${e.querySelector('.step-title')?.textContent} — ${e.querySelector('.step-desc')?.textContent}`),
+    '',
+    'WHAT TO AVOID',
+    ...Array.from(document.querySelectorAll('#mistakesContent .insight-item')).map(e=>'  • '+e.textContent),
+    '',
+    'OPPORTUNITY SCORE',
+    document.querySelector('.score-label-txt')?.textContent||'',
+    document.querySelector('.score-summary')?.textContent||'',
+    '',
+    '='.repeat(50),
+    'Generated by HiringLens · github.com/banesjunior3-afk/hiring-lens'
+  ].join('\n');
+
+  navigator.clipboard.writeText(t).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = '📋 Copy Full Action Plan'; }, 2500);
+  });
+}
+
+function resetForm() {
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('formCard').style.display = 'block';
+  document.getElementById('processText').value = '';
+  document.getElementById('jobDesc').value = '';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = msg; el.classList.add('visible');
+}
+
+function hideError() {
+  document.getElementById('errorBox').classList.remove('visible');
+}
+</script>
+</body>
+</html>
