@@ -377,6 +377,56 @@
 
   .score-summary { font-size: 13px; color: #94A3B8; margin-top: 4px; line-height: 1.6; }
 
+  .api-box {
+    background-color: #0D1526;
+    border: 1px solid #1E2D45;
+    border-left: 3px solid #2563EB;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+
+  .api-box-title {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #60A5FA; margin-bottom: 4px;
+  }
+
+  .api-box-desc {
+    font-size: 12px; color: #64748B;
+    margin-bottom: 14px; line-height: 1.5;
+  }
+
+  .api-box-desc a { color: #3B82F6; text-decoration: none; }
+
+  .api-row {
+    display: flex; gap: 10px; align-items: center;
+  }
+
+  .api-input {
+    flex: 1;
+    background-color: #1A2235;
+    border: 1px solid #2A3F5F;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-family: 'Inter', monospace;
+    font-size: 13px; color: #F1F5F9;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .api-input:focus { border-color: #2563EB; }
+  .api-input::placeholder { color: #64748B; }
+
+  .api-status {
+    font-size: 11px; font-weight: 600;
+    white-space: nowrap; color: #64748B;
+    min-width: 60px; text-align: right;
+  }
+
+  .api-status.valid { color: #10B981; }
+  .api-status.invalid { color: #EF4444; }
+
   .btn-copy {
     width: 100%; padding: 13px;
     background: transparent;
@@ -424,6 +474,21 @@
   </header>
 
   <div class="error-box" id="errorBox"></div>
+
+  <!-- API Key -->
+  <div class="api-box">
+    <div class="api-box-title">🔑 Your Anthropic API Key</div>
+    <div class="api-box-desc">
+      Required to run the analysis. Get your free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.
+      Your key stays in your browser — it's never stored or sent anywhere except directly to Anthropic.
+    </div>
+    <div class="api-row">
+      <input type="password" class="api-input" id="apiKeyInput"
+             placeholder="sk-ant-..."
+             oninput="validateKey()" autocomplete="off">
+      <span class="api-status" id="apiStatus">—</span>
+    </div>
+  </div>
 
   <div class="form-card" id="formCard">
     <div class="field">
@@ -536,7 +601,29 @@
 </div>
 
 <script>
-const API_KEY = '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';
+function validateKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const status = document.getElementById('apiStatus');
+  const btn = document.getElementById('analyzeBtn');
+  if (key.startsWith('sk-ant-') && key.length > 30) {
+    status.textContent = '✓ Ready';
+    status.className = 'api-status valid';
+    btn.disabled = false;
+  } else if (key.length > 0) {
+    status.textContent = '✗ Invalid';
+    status.className = 'api-status invalid';
+    btn.disabled = true;
+  } else {
+    status.textContent = '—';
+    status.className = 'api-status';
+    btn.disabled = true;
+  }
+}
+
+// Disable button on load
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('analyzeBtn').disabled = true;
+});
 
 function setStep(id, state) {
   const el = document.getElementById(id);
@@ -550,8 +637,10 @@ function animateSteps() {
 }
 
 async function analyze() {
+  const API_KEY     = document.getElementById('apiKeyInput').value.trim();
   const processText = document.getElementById('processText').value.trim();
   const jobDesc     = document.getElementById('jobDesc').value.trim();
+  if (!API_KEY) { showError('Please enter your Anthropic API key.'); return; }
   if (!processText || !jobDesc) { showError('Please fill in both fields.'); return; }
   hideError();
   document.getElementById('formCard').style.display = 'none';
